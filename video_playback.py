@@ -1,46 +1,64 @@
 import sys
 import pyzed.sl as sl
+import cv2
+import os
 
 def run():
     # Create a ZED camera object
     zed = sl.Camera()
 
-    # Set SVO path for playback from command line argument
-    input_path = "output.svo2"
-    
-    # Initialize parameters for SVO playback
-    init_parameters = sl.InitParameters()
-    init_parameters.set_from_svo_file(input_path)
+    # Check if an SVO file path is provided
+    if len(sys.argv) >= 2:
+        input_file = sys.argv[1]
+    else:
+        # If no argument, set default to "output.svo2"
+        input_file = "output.svo2"
 
-    # Open the ZED camera
-    err = zed.open(init_parameters)
+    # Ensure the file exists in the same directory
+    if not os.path.isfile(input_file):
+        print(f"Error: {input_file} not found.")
+        exit(1)
+
+    input_type = sl.InputType()
+    input_type.set_from_svo_file(input_file)
+
+    init = sl.InitParameters(input_t=input_type)
+    init.camera_resolution = sl.RESOLUTION.HD1080  # You can set your preferred resolution
+    init.depth_mode = sl.DEPTH_MODE.PERFORMANCE
+    init.coordinate_units = sl.UNIT.MILLIMETER
+
+    # Open the ZED camera or load the SVO file
+    err = zed.open(init)
     if err != sl.ERROR_CODE.SUCCESS:
-        print("Failed to open camera")
-        return
+        print(repr(err))
+        zed.close()
+        exit(1)
 
-    print(f"Playing back SVO file: {input_path}")
-    
-    # Initialize image to store frames
-    svo_image = sl.Mat()
+    # Prepare runtime parameters
+    runtime = sl.RuntimeParameters()
 
-    # Exit condition flag
-    exit_app = False
+    # Get the resolution of the SVO file
+    image_size = zed.get_camera_information().camera_configuration.resolution
 
-    # Loop to grab and process frames
-    while not exit_app:
-        # Grab the next frame
-        if zed.grab() == sl.ERROR_CODE.SUCCESS:
-            # Retrieve the side-by-side image from the SVO file
-            zed.retrieve_image(svo_image, sl.VIEW.SIDE_BY_SIDE)
-            # Get the current position in the SVO
-            svo_position = zed.get_svo_position()
-            print(f"Current SVO position: {svo_position}")
-            
-            # You can add additional processing here if needed
+    # Declare the image matrix
+    image_zed = sl.Mat(image_size.width, image_size.height, sl.MAT_TYPE.U8_C4)
 
-        elif zed.grab() == sl.ERROR_CODE.END_OF_SVOFILE_REACHED:
-            print("SVO end has been reached. Looping back to first frame.")
-            zed.set_svo_position(0)  # Loop back to the first frame
+    key = ' '
+    while key != 113:  # 'q' to quit
+        err = zed.grab(runtime)
+        if err == sl.ERROR_CODE.SUCCESS:
+            # Retrieve the left image from the SVO file
+            zed.retrieve_image(image_zed, sl.VIEW.LEFT, sl.MEM.CPU, image_size)
 
-        # Add exit condition based on your needs, for example, a specific time or key press
-        # Here, you can set exit_app = True based on a condition or time
+            # Convert to OpenCV format
+            image_ocv = image_zed.get_data()
+
+            # Display the image in OpenCV window
+            cv2.imshow("Image", image_ocv)
+
+            # Wait for a key press to continue
+            key = cv2.waitKey(10)
+
+    cv2.destroyAllWindows()
+    zed.close()
+    print("\nFINISH")

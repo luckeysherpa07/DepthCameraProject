@@ -22,6 +22,11 @@ def run():
 
     # Initialize the camera
     init_params = sl.InitParameters()
+
+    # Specify the resolution (e.g., HD 720p)
+    init_params.camera_resolution = sl.RESOLUTION.HD2K  # Options: HD2K, HD1080, HD720, VGA
+    init_params.camera_fps = 30  # Set frames per second (adjust as needed)
+
     if zed.open(init_params) != sl.ERROR_CODE.SUCCESS:
         print("Failed to open camera")
         return
@@ -43,5 +48,8 @@ def run():
             print("Failed to grab frame")
             break
 
+    # Disable recording and close the camera
+    zed.disable_recording()
     zed.close()
     print(f"Recording finished. SVO file saved to {output_path}")
+

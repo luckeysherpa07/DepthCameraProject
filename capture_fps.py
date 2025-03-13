@@ -21,6 +21,10 @@ def run():
     # Get the FPS of the SVO file
     fps = zed.get_camera_information().camera_configuration.fps
     print(f"FPS of the SVO file: {fps}")
+    
+    # Get the resolution of the SVO file
+    resolution = zed.get_camera_information().camera_configuration.resolution
+    print(f"Resolution of the SVO file: {resolution.width}x{resolution.height}")
 
     # Close the camera after use
     zed.close()
