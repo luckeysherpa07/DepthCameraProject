@@ -15,7 +15,7 @@ def run():
 
     # Define the base path and filename
     directory = os.path.dirname(os.path.abspath(__file__))
-    base_filename = "output"
+    base_filename = "output2"
 
     # Get the next available filename
     output_path = get_next_filename(directory, base_filename)
@@ -24,7 +24,7 @@ def run():
     init_params = sl.InitParameters()
 
     # Specify the resolution (e.g., HD 720p)
-    init_params.camera_resolution = sl.RESOLUTION.HD2K  # Options: HD2K, HD1080, HD720, VGA
+    init_params.camera_resolution = sl.RESOLUTION.HD720  # Options: HD2K, HD1080, HD720, VGA
     init_params.camera_fps = 30  # Set frames per second (adjust as needed)
 
     if zed.open(init_params) != sl.ERROR_CODE.SUCCESS:
