@@ -6,7 +6,7 @@ def run():
     zed = sl.Camera()
 
     # Set SVO file path
-    input_path = "output.svo2"  # The path to the SVO file
+    input_path = "output1.svo2"  # The path to the SVO file
 
     # Set up initialization parameters for playback
     init_parameters = sl.InitParameters()
