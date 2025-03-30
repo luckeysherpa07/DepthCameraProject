@@ -23,7 +23,7 @@ def run():
     input_type.set_from_svo_file(input_file)
 
     init = sl.InitParameters(input_t=input_type)
-    init.camera_resolution = sl.RESOLUTION.HD1080  # You can set your preferred resolution
+    init.camera_resolution = sl.RESOLUTION.HD1080  # Set your preferred resolution
     init.depth_mode = sl.DEPTH_MODE.PERFORMANCE
     init.coordinate_units = sl.UNIT.MILLIMETER
 
@@ -56,9 +56,20 @@ def run():
             # Display the image in OpenCV window
             cv2.imshow("Image", image_ocv)
 
-            # Wait for a key press to continue
-            key = cv2.waitKey(10)
+        # Check if the end of the SVO file is reached and reset
+        elif err == sl.ERROR_CODE.END_OF_SVOFILE_REACHED:
+            print("End of file reached. Looping back.")
+
+            # Close and reopen the SVO file to reset playback
+            zed.close()
+            zed.open(init)  # Reopen the file from the beginning
+
+        # Wait for a key press to continue
+        key = cv2.waitKey(10)
 
     cv2.destroyAllWindows()
     zed.close()
     print("\nFINISH")
+
+if __name__ == "__main__":
+    run()
