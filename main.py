@@ -2,8 +2,9 @@ import camera_calibration
 # import rgb_depth_registration
 # import zed_timestamp
 # import video_capture
-import video_playback
+# import video_playback
 # import capture_fps
+import align_video
 
 
 def main():
@@ -16,8 +17,9 @@ def main():
     # rgb_depth_registration.run()
     # zed_timestamp.run()
     # video_capture.run()
-    video_playback.run()
+    # video_playback.run()
     # capture_fps.run()
+    align_video.run()
 
 if __name__ == "__main__":
     main()
