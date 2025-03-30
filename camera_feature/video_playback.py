@@ -7,17 +7,35 @@ def run():
     # Create a ZED camera object
     zed = sl.Camera()
 
-    # Check if an SVO file path is provided
-    if len(sys.argv) >= 2:
-        input_file = sys.argv[1]
-    else:
-        # If no argument, set default to "output.svo2"
-        input_file = "output.svo2"
+    # Path to the folder containing the videos, go one level up from the current directory
+    video_folder = os.path.join(os.path.dirname(__file__), '..', 'captured_videos')
 
-    # Ensure the file exists in the same directory
-    if not os.path.isfile(input_file):
-        print(f"Error: {input_file} not found.")
+    # List all SVO files in the directory
+    video_files = [f for f in os.listdir(video_folder) if f.endswith('.svo2')]
+
+    if not video_files:
+        print("No SVO files found in the directory.")
         exit(1)
+
+    # Display available video files for the user to select
+    print("Available video files:")
+    for idx, video in enumerate(video_files, start=1):
+        print(f"{idx}. {video}")
+
+    # Ask the user to select a video
+    choice = input(f"Select a video (1-{len(video_files)}): ")
+    
+    try:
+        choice = int(choice)
+        if choice < 1 or choice > len(video_files):
+            raise ValueError
+    except ValueError:
+        print("Invalid choice. Exiting.")
+        exit(1)
+
+    input_file = os.path.join(video_folder, video_files[choice - 1])
+
+    print(f"Playing video: {video_files[choice - 1]}")
 
     input_type = sl.InputType()
     input_type.set_from_svo_file(input_file)

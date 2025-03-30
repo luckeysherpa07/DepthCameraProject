@@ -7,7 +7,7 @@ from camera_feature import align_video
 
 def main():
     print("Choose a function to run:")
-    print("1. Camera Calibration")
+    print("1. Display Camera Calibration")
     print("2. ZED Timestamp")
     print("3. Video Capture")
     print("4. Video Playback")
