@@ -1,9 +1,9 @@
-import camera_calibration
-import zed_timestamp
-import video_capture
-import video_playback
-import capture_fps
-import align_video
+from camera_feature import camera_calibration
+from camera_feature import zed_timestamp
+from camera_feature import video_capture
+from camera_feature import video_playback
+from camera_feature import capture_fps
+from camera_feature import align_video
 
 def main():
     print("Choose a function to run:")
