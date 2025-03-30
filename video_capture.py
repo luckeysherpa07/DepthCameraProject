@@ -3,11 +3,29 @@ import time
 import os
 
 def get_next_filename(directory, base_filename):
-    # Generate a unique filename using the current timestamp
+    # Generate a unique filename using the current timestamp (avoid invalid characters like ":")
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     return os.path.join(directory, f"{base_filename}_{timestamp}.svo")
 
-def run():
+def select_resolution():
+    print("Select a resolution:")
+    print("1: HD2K (2208x1242)")
+    print("2: HD1080 (1920x1080)")
+    print("3: HD720 (1280x720)")
+    print("4: VGA (640x480)")
+
+    choice = input("Enter the number of your choice (1-4): ")
+
+    resolutions = {
+        "1": sl.RESOLUTION.HD2K,
+        "2": sl.RESOLUTION.HD1080,
+        "3": sl.RESOLUTION.HD720,
+        "4": sl.RESOLUTION.VGA,
+    }
+
+    return resolutions.get(choice, sl.RESOLUTION.HD720)  # Default to HD720 if invalid choice
+
+def run(duration=5):
     # Create a ZED camera object
     zed = sl.Camera()
 
@@ -18,12 +36,13 @@ def run():
     # Get the next available filename with a unique timestamp
     output_path = get_next_filename(directory, base_filename)
 
+    # Select resolution from user input
+    resolution = select_resolution()
+
     # Initialize the camera
     init_params = sl.InitParameters()
-
-    # Specify the resolution (e.g., HD 720p)
-    init_params.camera_resolution = sl.RESOLUTION.HD720  # Options: HD2K, HD1080, HD720, VGA
-    init_params.camera_fps = 30  # Set frames per second (adjust as needed)
+    init_params.camera_resolution = resolution  # Set the chosen resolution
+    init_params.camera_fps = 30  # Set frames per second
 
     if zed.open(init_params) != sl.ERROR_CODE.SUCCESS:
         print("Failed to open camera")
@@ -39,9 +58,9 @@ def run():
 
     print(f"Recording to {output_path}")
 
-    # Capture frames and record them for 5 seconds
+    # Capture frames and record for the given duration
     start_time = time.time()
-    while time.time() - start_time < 5:
+    while time.time() - start_time < duration:
         if zed.grab() != sl.ERROR_CODE.SUCCESS:
             print("Failed to grab frame")
             break
