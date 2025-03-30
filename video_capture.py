@@ -3,11 +3,9 @@ import time
 import os
 
 def get_next_filename(directory, base_filename):
-    # Generate the next available file name by incrementing the number
-    i = 1
-    while os.path.exists(os.path.join(directory, f"{base_filename}{i}.svo")):
-        i += 1
-    return os.path.join(directory, f"{base_filename}{i}.svo")
+    # Generate a unique filename using the current timestamp
+    timestamp = time.strftime("%Y%m%d_%H%M%S")
+    return os.path.join(directory, f"{base_filename}_{timestamp}.svo")
 
 def run():
     # Create a ZED camera object
@@ -15,9 +13,9 @@ def run():
 
     # Define the base path and filename
     directory = os.path.dirname(os.path.abspath(__file__))
-    base_filename = "output2"
+    base_filename = "captured_video"
 
-    # Get the next available filename
+    # Get the next available filename with a unique timestamp
     output_path = get_next_filename(directory, base_filename)
 
     # Initialize the camera
