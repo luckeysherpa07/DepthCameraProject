@@ -8,10 +8,10 @@ from camera_feature import align_video
 def main():
     print("Choose a function to run:")
     print("1. Display Camera Calibration")
-    print("2. ZED Timestamp")
-    print("3. Video Capture")
-    print("4. Video Playback")
-    print("5. Capture FPS")
+    print("2. Capture Video")
+    print("3. Display ZED Timestamp")
+    print("4. Playback Video")
+    print("5. Display FPS")
     print("6. Align Video")
 
     choice = input("Enter the number (1/2/3/4/5/6): ")
@@ -19,9 +19,9 @@ def main():
     if choice == "1":
         camera_calibration.run()
     elif choice == "2":
-        zed_timestamp.run()
+        video_capture.run() 
     elif choice == "3":
-        video_capture.run()
+        zed_timestamp.run()
     elif choice == "4":
         video_playback.run()
     elif choice == "5":
