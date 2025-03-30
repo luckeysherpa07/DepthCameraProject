@@ -26,3 +26,6 @@ def run():
     print(f"Horizontal FoV: {h_fov}")
 
     zed.close()
+
+if __name__ == "__main__":
+    run()

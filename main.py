@@ -1,23 +1,35 @@
 import camera_calibration
-# import zed_timestamp
-# import video_capture
-# import video_playback
-# import capture_fps
+import zed_timestamp
+import video_capture
+import video_playback
+import capture_fps
 import align_video
-
 
 def main():
     print("Choose a function to run:")
     print("1. Camera Calibration")
-    print("2. RGB-Depth Registration")
-    # choice = input("Enter the number (1/2): ")
+    print("2. ZED Timestamp")
+    print("3. Video Capture")
+    print("4. Video Playback")
+    print("5. Capture FPS")
+    print("6. Align Video")
 
-    # camera_calibration.run()
-    # zed_timestamp.run()
-    # video_capture.run()
-    # video_playback.run()
-    # capture_fps.run()
-    align_video.run()
+    choice = input("Enter the number (1/2/3/4/5/6): ")
+
+    if choice == "1":
+        camera_calibration.run()
+    elif choice == "2":
+        zed_timestamp.run()
+    elif choice == "3":
+        video_capture.run()
+    elif choice == "4":
+        video_playback.run()
+    elif choice == "5":
+        capture_fps.run()
+    elif choice == "6":
+        align_video.run()
+    else:
+        print("Invalid choice!")
 
 if __name__ == "__main__":
     main()

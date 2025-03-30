@@ -53,3 +53,5 @@ def run():
     zed.close()
     print(f"Recording finished. SVO file saved to {output_path}")
 
+if __name__ == "__main__":
+    run()

@@ -28,3 +28,6 @@ def run():
 
     # Close the camera after use
     zed.close()
+
+if __name__ == "__main__":
+    run()

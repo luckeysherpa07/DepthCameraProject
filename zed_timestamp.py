@@ -41,3 +41,6 @@ def run():
     if last_frame_timestamp:
         last_hms = convert_to_hms(last_frame_timestamp)
         print(f"Ending timestamp: {last_hms[0]:02}:{last_hms[1]:02}:{last_hms[2]:02}")
+
+if __name__ == "__main__":
+    run()
