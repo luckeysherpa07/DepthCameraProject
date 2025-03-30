@@ -1,5 +1,4 @@
 import camera_calibration
-# import rgb_depth_registration
 # import zed_timestamp
 # import video_capture
 # import video_playback
@@ -14,7 +13,6 @@ def main():
     # choice = input("Enter the number (1/2): ")
 
     # camera_calibration.run()
-    # rgb_depth_registration.run()
     # zed_timestamp.run()
     # video_capture.run()
     # video_playback.run()
