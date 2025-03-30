@@ -1,4 +1,5 @@
 import pyzed.sl as sl
+import os
 
 # Function to convert nanoseconds to hours, minutes, and seconds
 def convert_to_hms(timestamp_ns):
@@ -9,10 +10,38 @@ def convert_to_hms(timestamp_ns):
     return hours, minutes, seconds
 
 def run():
-    # Set SVO path for playback
-    input_path = "output.svo2"  # Change this to your actual file path
+    # Path to the folder containing the videos, go one level up from the current directory
+    video_folder = os.path.join(os.path.dirname(__file__), '..', 'captured_videos')
+
+    # List all SVO files in the directory
+    video_files = [f for f in os.listdir(video_folder) if f.endswith('.svo2')]
+
+    if not video_files:
+        print("No SVO files found in the directory.")
+        return
+
+    # Display available video files for the user to select
+    print("Available video files:")
+    for idx, video in enumerate(video_files, start=1):
+        print(f"{idx}. {video}")
+
+    # Ask the user to select a video
+    choice = input(f"Select a video (1-{len(video_files)}): ")
+
+    try:
+        choice = int(choice)
+        if choice < 1 or choice > len(video_files):
+            raise ValueError
+    except ValueError:
+        print("Invalid choice. Exiting.")
+        return
+
+    input_file = os.path.join(video_folder, video_files[choice - 1])
+
+    print(f"Playing video: {video_files[choice - 1]}")
+
     init_parameters = sl.InitParameters()
-    init_parameters.set_from_svo_file(input_path)
+    init_parameters.set_from_svo_file(input_file)
 
     # Initialize the ZED camera for playback
     zed = sl.Camera()
