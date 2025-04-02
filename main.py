@@ -13,7 +13,7 @@ def main():
     print("3. Display ZED Timestamp")
     print("4. Playback Video")
     print("5. Display Depth Video")
-    print("6. Display FPS")
+    print("6. Display FPS and Resolution")
     print("7. Align Video")
 
     choice = input("Enter the number (1/2/3/4/5/6/7): ")
