@@ -59,6 +59,7 @@ def run():
     confidence_map = sl.Mat(image_size.width, image_size.height, sl.MAT_TYPE.U8_C1)
 
     key = ' '
+    print('Press q to close the playback window')
     while key != 113:  # 'q' to quit
         err = zed.grab(runtime)
         if err == sl.ERROR_CODE.SUCCESS:

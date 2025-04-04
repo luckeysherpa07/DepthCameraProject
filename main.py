@@ -1,6 +1,6 @@
 from camera_feature import camera_calibration
-from camera_feature import zed_timestamp
 from camera_feature import video_capture
+from camera_feature import zed_timestamp
 from camera_feature import video_playback
 from camera_feature import capture_fps
 from camera_feature import display_depth_video
@@ -16,7 +16,7 @@ def main():
     print("5. Display Depth Video")
     print("6. Display Confidence Map")
     print("7. Display FPS")
-    print("8. Align Video")
+    # print("8. Align Video")
 
     choice = input("Enter the number (1/2/3/4/5/6/7/8): ")
 
