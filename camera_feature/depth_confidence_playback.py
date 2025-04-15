@@ -1,12 +1,12 @@
 import sys
+import os
+import numpy as np
 import pyzed.sl as sl
 import cv2
-import os
 
 def run():
     zed = sl.Camera()
 
-    # Safe __file__ fallback
     script_dir = os.path.dirname(os.path.abspath(__file__)) if '__file__' in globals() else os.getcwd()
     video_folder = os.path.join(script_dir, '..', 'captured_videos')
 
@@ -44,39 +44,46 @@ def run():
         zed.close()
         sys.exit(1)
 
-    camera_fps = zed.get_camera_information().camera_configuration.fps
+    runtime = sl.RuntimeParameters()
+    camera_info = zed.get_camera_information().camera_configuration
+    image_size = camera_info.resolution
+    camera_fps = camera_info.fps
     frame_delay = int(1000 / camera_fps)
 
-    runtime = sl.RuntimeParameters()
-    image_size = zed.get_camera_information().camera_configuration.resolution
     image_zed = sl.Mat(image_size.width, image_size.height, sl.MAT_TYPE.U8_C4)
     depth_image = sl.Mat(image_size.width, image_size.height, sl.MAT_TYPE.U8_C4)
+    confidence_map = sl.Mat(image_size.width, image_size.height, sl.MAT_TYPE.U8_C1)
 
-    cv2.namedWindow("Image", cv2.WINDOW_AUTOSIZE)
-    cv2.namedWindow("Depth", cv2.WINDOW_AUTOSIZE)
+    cv2.namedWindow("Image", cv2.WINDOW_NORMAL)
+    cv2.namedWindow("Depth", cv2.WINDOW_NORMAL)
+    cv2.namedWindow("Confidence Map", cv2.WINDOW_NORMAL)
 
     print("Press 'q' to quit.")
     key = ' '
-    while key != 113:  # ASCII for 'q'
+    while key != 113:
         err = zed.grab(runtime)
         if err == sl.ERROR_CODE.SUCCESS:
             zed.retrieve_image(image_zed, sl.VIEW.LEFT, sl.MEM.CPU, image_size)
             zed.retrieve_image(depth_image, sl.VIEW.DEPTH, sl.MEM.CPU, image_size)
+            zed.retrieve_measure(confidence_map, sl.MEASURE.CONFIDENCE)
 
             image_ocv = image_zed.get_data()
             depth_ocv = depth_image.get_data()
 
-            # Normalize depth for better visualization
             depth_ocv = cv2.normalize(depth_ocv, None, 0, 255, cv2.NORM_MINMAX)
             depth_ocv = cv2.convertScaleAbs(depth_ocv)
 
+            confidence_np = confidence_map.get_data()
+            normalized_confidence = cv2.normalize(confidence_np, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+            colored_map = cv2.applyColorMap(normalized_confidence, cv2.COLORMAP_JET)
+
             cv2.imshow("Image", image_ocv)
             cv2.imshow("Depth", depth_ocv)
+            cv2.imshow("Confidence Map", colored_map)
 
         elif err == sl.ERROR_CODE.END_OF_SVOFILE_REACHED:
             print("End of file reached. Looping back.")
             zed.set_svo_position(0)
-            continue
 
         key = cv2.waitKey(frame_delay)
 
@@ -85,7 +92,4 @@ def run():
     print("\nFINISH")
 
 if __name__ == "__main__":
-    try:
-        run()
-    except KeyboardInterrupt:
-        print("\nPlayback interrupted by user.")
+    run()
