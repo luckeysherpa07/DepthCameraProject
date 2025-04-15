@@ -1,44 +1,102 @@
 import pyzed.sl as sl
+import time
+import os
 import cv2
 
-def run():
-    # Set up the ZED camera
+def get_next_filename(directory, base_filename):
+    # Generate a unique filename using the current timestamp (avoid invalid characters like ":")
+    timestamp = time.strftime("%Y%m%d_%H%M%S")
+    return os.path.join(directory, f"{base_filename}_{timestamp}.svo")
+
+def select_resolution():
+    print("Select a resolution:")
+    print("1: HD2K (2208x1242)")
+    print("2: HD1080 (1920x1080)")
+    print("3: HD720 (1280x720)")
+    print("4: VGA (640x480)")
+
+    choice = input("Enter the number of your choice (1-4): ")
+
+    resolutions = {
+        "1": sl.RESOLUTION.HD2K,
+        "2": sl.RESOLUTION.HD1080,
+        "3": sl.RESOLUTION.HD720,
+        "4": sl.RESOLUTION.VGA,
+    }
+
+    return resolutions.get(choice, sl.RESOLUTION.HD720)  # Default to HD720 if invalid choice
+
+def run(duration=5):
+    # Create a ZED camera object
     zed = sl.Camera()
 
-    # Initialize ZED camera parameters
-    init = sl.InitParameters()
-    init.camera_resolution = sl.RESOLUTION.HD720  # Choose your resolution (e.g., HD720)
-    init.depth_mode = sl.DEPTH_MODE.NONE  # No depth information needed for live view
+    # Define the base path and filename (one directory above the script)
+    directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "captured_videos")  # Updated path
+    if not os.path.exists(directory):
+        os.makedirs(directory)  # Create directory if it doesn't exist
+    base_filename = "captured_video"
 
-    # Open the camera
-    if zed.open(init) != sl.ERROR_CODE.SUCCESS:
+    # Get the next available filename with a unique timestamp
+    output_path = get_next_filename(directory, base_filename)
+
+    # Select resolution from user input
+    resolution = select_resolution()
+
+    # Initialize the camera
+    init_params = sl.InitParameters()
+    init_params.camera_resolution = resolution  # Set the chosen resolution
+    init_params.camera_fps = 30  # Set frames per second
+
+    if zed.open(init_params) != sl.ERROR_CODE.SUCCESS:
         print("Failed to open camera")
-        exit(1)
-
-    # Create a Mat object to store images
-    image = sl.Mat()
+        return
 
     # Create a resizable OpenCV window
     cv2.namedWindow("ZED Live View", cv2.WINDOW_NORMAL)
-    
-    print("Press ESC to exit.")
+
+    # Enable recording
+    recording_params = sl.RecordingParameters(output_path, sl.SVO_COMPRESSION_MODE.H264)
+    err = zed.enable_recording(recording_params)
+    if err != sl.ERROR_CODE.SUCCESS:
+        print(f"Failed to start recording: {err}")
+        zed.close()
+        return
+
+    print(f"Recording to {output_path}")
+
+    # Capture frames and wait for spacebar to start recording
     while True:
         # Grab the latest frame
         if zed.grab() == sl.ERROR_CODE.SUCCESS:
             # Retrieve the left image from the camera
+            image = sl.Mat()
             zed.retrieve_image(image, sl.VIEW.LEFT)
 
             # Convert image to OpenCV format and show it
             image_data = image.get_data()
             cv2.imshow("ZED Live View", image_data)
 
-            # Wait for the ESC key to exit
-            if cv2.waitKey(1) == 27:  # ESC key
+            # Wait for spacebar to start recording
+            key = cv2.waitKey(1) & 0xFF
+            if key == 27:  # ESC key to exit
                 break
+            elif key == 32:  # Spacebar to start recording
+                print("Recording started...")
+                start_time = time.time()
 
-    # Close the camera and OpenCV windows
+                # Record for the specified duration
+                while time.time() - start_time < duration:
+                    if zed.grab() != sl.ERROR_CODE.SUCCESS:
+                        print("Failed to grab frame")
+                        break
+
+                print("Recording finished.")
+
+    # Disable recording and close the camera
+    zed.disable_recording()
     zed.close()
     cv2.destroyAllWindows()
+    print(f"SVO file saved to {output_path}")
 
 if __name__ == "__main__":
     run()
