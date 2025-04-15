@@ -15,7 +15,7 @@ def run():
 
     if not video_files:
         print("No SVO files found in the directory.")
-        exit(1)
+        sys.exit(1)
 
     # Display available video files for the user to select
     print("Available video files:")
@@ -31,7 +31,7 @@ def run():
             raise ValueError
     except ValueError:
         print("Invalid choice. Exiting.")
-        exit(1)
+        sys.exit(1)
 
     input_file = os.path.join(video_folder, video_files[choice - 1])
 
@@ -41,7 +41,7 @@ def run():
     input_type.set_from_svo_file(input_file)
 
     init = sl.InitParameters(input_t=input_type)
-    init.camera_resolution = sl.RESOLUTION.HD1080  # Set your preferred resolution
+    init.camera_resolution = sl.RESOLUTION.HD1080
     init.depth_mode = sl.DEPTH_MODE.PERFORMANCE
     init.coordinate_units = sl.UNIT.MILLIMETER
 
@@ -50,7 +50,11 @@ def run():
     if err != sl.ERROR_CODE.SUCCESS:
         print(repr(err))
         zed.close()
-        exit(1)
+        sys.exit(1)
+
+    # Get original recording FPS and compute delay for real-time playback
+    camera_fps = zed.get_camera_information().camera_configuration.fps
+    frame_delay = int(1000 / camera_fps)  # in milliseconds
 
     # Prepare runtime parameters
     runtime = sl.RuntimeParameters()
@@ -61,34 +65,29 @@ def run():
     # Declare the image matrix
     image_zed = sl.Mat(image_size.width, image_size.height, sl.MAT_TYPE.U8_C4)
 
+    cv2.namedWindow("Image", cv2.WINDOW_AUTOSIZE)
     key = ' '
     print('Press q to close the playback window')
+
     while key != 113:  # 'q' to quit
         err = zed.grab(runtime)
         if err == sl.ERROR_CODE.SUCCESS:
-            # Retrieve the left image from the SVO file
             zed.retrieve_image(image_zed, sl.VIEW.LEFT, sl.MEM.CPU, image_size)
-
-            # Convert to OpenCV format
             image_ocv = image_zed.get_data()
-
-            # Display the image in OpenCV window
             cv2.imshow("Image", image_ocv)
-
-        # Check if the end of the SVO file is reached and reset
         elif err == sl.ERROR_CODE.END_OF_SVOFILE_REACHED:
             print("End of file reached. Looping back.")
+            zed.set_svo_position(0)  # Reset to beginning instead of reopening
+            continue
 
-            # Close and reopen the SVO file to reset playback
-            zed.close()
-            zed.open(init)  # Reopen the file from the beginning
-
-        # Wait for a key press to continue
-        key = cv2.waitKey(10)
+        key = cv2.waitKey(frame_delay)
 
     cv2.destroyAllWindows()
     zed.close()
     print("\nFINISH")
 
 if __name__ == "__main__":
-    run()
+    try:
+        run()
+    except KeyboardInterrupt:
+        print("\nPlayback interrupted by user.")
