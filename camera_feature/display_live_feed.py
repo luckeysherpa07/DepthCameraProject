@@ -47,17 +47,8 @@ def run():
     cv2.namedWindow("Depth Map", cv2.WINDOW_NORMAL)
     cv2.namedWindow("Confidence Map", cv2.WINDOW_NORMAL)
 
-    recording_params = sl.RecordingParameters(output_path, sl.SVO_COMPRESSION_MODE.H264)
-    err = zed.enable_recording(recording_params)
-    if err != sl.ERROR_CODE.SUCCESS:
-        print(f"Failed to start recording: {err}")
-        zed.close()
-        return
-
-    print("Recording ready. Press SPACE to start/stop. ESC to exit.")
-
+    recording = False  # Initially, not recording
     runtime = sl.RuntimeParameters()
-    recording = False
 
     image = sl.Mat()
     depth = sl.Mat()
@@ -84,13 +75,23 @@ def run():
             cv2.imshow("Confidence Map", conf_map)
 
             key = cv2.waitKey(1) & 0xFF
-            if key == 27:  # ESC
+            if key == 27:  # ESC to exit
                 break
-            elif key == 32:  # SPACE
-                recording = not recording
-                print("Recording started..." if recording else "Recording stopped.")
+            elif key == 32:  # SPACE to start/stop recording
+                if not recording:  # Start recording if not already recording
+                    recording = True
+                    recording_params = sl.RecordingParameters(output_path, sl.SVO_COMPRESSION_MODE.H264)
+                    err = zed.enable_recording(recording_params)
+                    if err != sl.ERROR_CODE.SUCCESS:
+                        print(f"Failed to start recording: {err}")
+                        zed.close()
+                        return
+                    print("Recording started...")
+                else:  # Stop recording if already recording
+                    zed.disable_recording()
+                    recording = False
+                    print("Recording stopped.")
 
-    zed.disable_recording()
     zed.close()
     cv2.destroyAllWindows()
     print(f"SVO file saved to {output_path}")
