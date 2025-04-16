@@ -1,24 +1,24 @@
 from camera_feature import camera_calibration
-from camera_feature import display_live_feed  # Now option 2
-from camera_feature import depth_confidence_playback  # Option 3
+from camera_feature import display_live_feed 
 from camera_feature import zed_timestamp
 from camera_feature import video_playback
-from camera_feature import display_body_tracking  # New import for option 6
+from camera_feature import display_body_tracking
 from camera_feature import capture_fps
 from camera_feature import display_depth_video
 from camera_feature import display_confidence_map
 from camera_feature import video_capture
 from camera_feature import align_video
+from camera_feature import display_all_features
 
 def main():
     while True:
         print("\nChoose a function to run:")
         print("1. Display Camera Calibration")
         print("2. Display Live Feed")
-        print("3. Depth and Confidence Playback")
+        print("3. Display All Features")
         print("4. Display ZED Timestamp")
         print("5. Playback Video")
-        print("6. Display Body Tracking")  # New option 6
+        print("6. Display Body Tracking")
         print("7. Display FPS")
         print("8. Display Depth Video")
         print("9. Display Confidence Map")
@@ -33,7 +33,7 @@ def main():
         elif choice == "2":
             display_live_feed.run()
         elif choice == "3":
-            depth_confidence_playback.run()
+            display_all_features.run()  # Updated function
         elif choice == "4":
             zed_timestamp.run()
         elif choice == "5":
