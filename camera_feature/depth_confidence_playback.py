@@ -98,18 +98,21 @@ def run():
             normalized_confidence = cv2.normalize(confidence_np, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
             colored_map = cv2.applyColorMap(normalized_confidence, cv2.COLORMAP_JET)
 
-            # Display body tracking keypoints
+            # Copy for keypoint drawing
+            image_with_keypoints = image_ocv.copy()
+
+            # Draw body keypoints only on the copy
             for body in bodies.body_list:
                 if body.tracking_state == sl.OBJECT_TRACKING_STATE.OK:
                     for kp in body.keypoint_2d:
                         if not np.isnan(kp[0]) and not np.isnan(kp[1]):
-                            cv2.circle(image_ocv, (int(kp[0]), int(kp[1])), 3, (0, 255, 0), -1)
+                            cv2.circle(image_with_keypoints, (int(kp[0]), int(kp[1])), 3, (0, 255, 0), -1)
 
-            # Show the images in OpenCV windows
-            cv2.imshow("Image", image_ocv)
+            # Show the images
+            cv2.imshow("Image", image_ocv)  # clean RGB image
             cv2.imshow("Depth", depth_ocv)
             cv2.imshow("Confidence Map", colored_map)
-            cv2.imshow("Body Tracking", image_ocv)
+            cv2.imshow("Body Tracking", image_with_keypoints)  # with keypoints
 
         elif zed.get_svo_position() == zed.get_svo_end_position():
             print("End of file reached. Looping back.")
