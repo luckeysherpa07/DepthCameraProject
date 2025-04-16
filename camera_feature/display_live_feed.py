@@ -1,8 +1,9 @@
-import pyzed.sl as sl
-import time
-import os
-import cv2
+import sys
 import numpy as np
+import pyzed.sl as sl
+import cv2
+import os
+import time
 
 def get_next_filename(directory, base_filename):
     timestamp = time.strftime("%Y%m%d_%H%M%S")
@@ -42,43 +43,78 @@ def run():
         print("Failed to open camera")
         return
 
+    # Enable positional tracking
+    positional_tracking_params = sl.PositionalTrackingParameters()
+    zed.enable_positional_tracking(positional_tracking_params)
+
+    # Set body tracking parameters
+    body_tracking_params = sl.BodyTrackingParameters()
+    body_tracking_params.detection_model = sl.BODY_TRACKING_MODEL.HUMAN_BODY_ACCURATE
+    body_tracking_params.enable_tracking = True
+    body_tracking_params.enable_body_fitting = True
+    body_tracking_params.body_format = sl.BODY_FORMAT.BODY_34
+
+    if zed.enable_body_tracking(body_tracking_params) != sl.ERROR_CODE.SUCCESS:
+        print("Failed to enable body tracking.")
+        zed.close()
+        return
+
     # Create resizable windows
     cv2.namedWindow("RGB View", cv2.WINDOW_NORMAL)
     cv2.namedWindow("Depth Map", cv2.WINDOW_NORMAL)
     cv2.namedWindow("Confidence Map", cv2.WINDOW_NORMAL)
+    cv2.namedWindow("Body Tracking", cv2.WINDOW_NORMAL)
 
     recording = False  # Initially, not recording
-    runtime = sl.RuntimeParameters()
+    runtime_params = sl.RuntimeParameters()
+    body_runtime_params = sl.BodyTrackingRuntimeParameters()
+    body_runtime_params.detection_confidence_threshold = 40
 
     image = sl.Mat()
     depth = sl.Mat()
     confidence = sl.Mat()
+    bodies = sl.Bodies()
 
-    while True:
-        if zed.grab(runtime) == sl.ERROR_CODE.SUCCESS:
+    key = ' '
+    print("Press 'q' to quit.")
+    while key != 113:  # ASCII for 'q'
+        if zed.grab(runtime_params) == sl.ERROR_CODE.SUCCESS:
             zed.retrieve_image(image, sl.VIEW.LEFT)
             zed.retrieve_image(depth, sl.VIEW.DEPTH)
             zed.retrieve_measure(confidence, sl.MEASURE.CONFIDENCE)
+            zed.retrieve_bodies(bodies, body_runtime_params)
 
-            img = image.get_data()
+            img_np = image.get_data()
+
+            # Create depth map
             depth_map = cv2.normalize(depth.get_data(), None, 0, 255, cv2.NORM_MINMAX)
             depth_map = cv2.convertScaleAbs(depth_map)
 
+            # Create confidence map
             conf_map = cv2.normalize(confidence.get_data(), None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
             conf_map = cv2.applyColorMap(conf_map, cv2.COLORMAP_JET)
 
-            if recording:
-                cv2.putText(img, "REC", (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            # Show RGB View without body tracking
+            cv2.imshow("RGB View", img_np)
 
-            cv2.imshow("RGB View", img)
+            # Show Depth and Confidence Map
             cv2.imshow("Depth Map", depth_map)
             cv2.imshow("Confidence Map", conf_map)
 
-            key = cv2.waitKey(1) & 0xFF
-            if key == 27:  # ESC to exit
-                break
-            elif key == 32:  # SPACE to start/stop recording
-                if not recording:  # Start recording if not already recording
+            # Overlay body tracking data in the "Body Tracking" window
+            for body in bodies.body_list:
+                if body.tracking_state == sl.OBJECT_TRACKING_STATE.OK:
+                    for kp in body.keypoint_2d:
+                        if not np.isnan(kp[0]) and not np.isnan(kp[1]):
+                            cv2.circle(img_np, (int(kp[0]), int(kp[1])), 3, (0, 255, 0), -1)
+
+            cv2.imshow("Body Tracking", img_np)
+
+            if recording:
+                cv2.putText(img_np, "REC", (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+
+            if key == 32:  # SPACE to start/stop recording
+                if not recording:
                     recording = True
                     recording_params = sl.RecordingParameters(output_path, sl.SVO_COMPRESSION_MODE.H264)
                     err = zed.enable_recording(recording_params)
@@ -87,14 +123,17 @@ def run():
                         zed.close()
                         return
                     print("Recording started...")
-                else:  # Stop recording if already recording
+                else:
                     zed.disable_recording()
                     recording = False
                     print("Recording stopped.")
 
+        key = cv2.waitKey(10)
+
     zed.close()
     cv2.destroyAllWindows()
     print(f"SVO file saved to {output_path}")
+    print("\nFINISH")
 
 if __name__ == "__main__":
     run()
