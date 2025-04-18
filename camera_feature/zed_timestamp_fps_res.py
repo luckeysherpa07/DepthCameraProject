@@ -1,14 +1,6 @@
 import pyzed.sl as sl
 import os
 
-# Function to convert nanoseconds to hours, minutes, and seconds
-# def convert_to_hms(timestamp_ns):
-#     timestamp_s = timestamp_ns / 1e9  # Convert nanoseconds to seconds
-#     hours = int(timestamp_s // 3600)
-#     minutes = int((timestamp_s % 3600) // 60)
-#     seconds = int(timestamp_s % 60)
-#     return hours, minutes, seconds
-
 def run():
     # Path to the folder containing the videos, go one level up from the current directory
     video_folder = os.path.join(os.path.dirname(__file__), '..', 'captured_videos')
@@ -40,14 +32,24 @@ def run():
 
     print(f"Playing video: {video_files[choice - 1]}")
 
+    # Set up initialization parameters for playback
     init_parameters = sl.InitParameters()
     init_parameters.set_from_svo_file(input_file)
 
-    # Initialize the ZED camera for playback
+    # Create a ZED camera object
     zed = sl.Camera()
-    if zed.open(init_parameters) != sl.ERROR_CODE.SUCCESS:
-        print("Failed to open SVO file.")
-        return
+
+    # Open the ZED camera or load the SVO file
+    err = zed.open(init_parameters)
+    if err != sl.ERROR_CODE.SUCCESS:
+        print("Failed to open the SVO file.")
+        exit(1)
+
+    # Get FPS and resolution of the SVO file
+    fps = zed.get_camera_information().camera_configuration.fps
+    resolution = zed.get_camera_information().camera_configuration.resolution
+    print(f"FPS: {fps}")
+    print(f"Resolution: {resolution.width}x{resolution.height}")
 
     # Variables to store timestamps
     first_frame_timestamp = None
@@ -56,21 +58,17 @@ def run():
     # Grab the first frame (to get the starting timestamp)
     if zed.grab() == sl.ERROR_CODE.SUCCESS:
         first_frame_timestamp = zed.get_timestamp(sl.TIME_REFERENCE.CURRENT).get_nanoseconds()
-        # first_hms = convert_to_hms(first_frame_timestamp)
-        # print(f"Starting timestamp: {first_hms[0]:02}:{first_hms[1]:02}:{first_hms[2]:02}")
         print(f"Starting timestamp in nanosecond: {first_frame_timestamp}")
 
     # Loop through the SVO file to get the last frame's timestamp
     while zed.grab() == sl.ERROR_CODE.SUCCESS:
         last_frame_timestamp = zed.get_timestamp(sl.TIME_REFERENCE.CURRENT).get_nanoseconds()
 
-    # Close the ZED camera
+    # Close the ZED camera after use
     zed.close()
 
     # Print the last frame's timestamp
     if last_frame_timestamp:
-        # last_hms = convert_to_hms(last_frame_timestamp)
-        # print(f"Ending timestamp: {last_hms[0]:02}:{last_hms[1]:02}:{last_hms[2]:02}")
         print(f"Ending timestamp in nanosecond: {last_frame_timestamp}")
 
 if __name__ == "__main__":
