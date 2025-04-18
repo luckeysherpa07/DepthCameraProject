@@ -7,7 +7,7 @@ from camera_feature import display_depth_video
 from camera_feature import display_confidence_map
 from camera_feature import video_capture
 from camera_feature import display_all_features
-from camera_feature import display_davis_feed  # New import
+from camera_feature import display_davis_feed 
 
 def main():
     options = {
