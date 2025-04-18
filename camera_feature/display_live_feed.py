@@ -65,6 +65,12 @@ def run():
     cv2.namedWindow("Confidence Map", cv2.WINDOW_NORMAL)
     cv2.namedWindow("Body Tracking", cv2.WINDOW_NORMAL)
 
+    # Set the window positions to avoid overlap
+    cv2.moveWindow("RGB View", 0, 0)  # Position the RGB window at (0, 0)
+    cv2.moveWindow("Depth Map", 640, 0)  # Position the Depth Map to the right of RGB
+    cv2.moveWindow("Confidence Map", 0, 480)  # Position the Confidence Map below RGB
+    cv2.moveWindow("Body Tracking", 640, 480)  # Position the Body Tracking below Depth Map
+
     recording = False  # Initially, not recording
     runtime_params = sl.RuntimeParameters()
     body_runtime_params = sl.BodyTrackingRuntimeParameters()
