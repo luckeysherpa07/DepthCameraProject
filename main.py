@@ -14,13 +14,13 @@ def main():
         "1": camera_calibration.run,
         "2": display_live_feed.run,
         "3": display_davis_feed.run,
-        "4": video_capture.run,  # Moved this
+        "4": video_capture.run,
         "5": zed_timestamp_fps_res.run,
-        "6": video_playback.run,  # Name changed here
+        "6": video_playback.run,  
         "7": display_depth_video.run,
         "8": display_confidence_map.run,
         "9": display_body_tracking.run,
-        "10": display_all_features.run  # Moved this
+        "10": display_all_features.run 
     }
 
     while True:
@@ -28,13 +28,13 @@ def main():
         print("1. Display ZED Camera Calibration")
         print("2. Display ZED Live Feed")
         print("3. Display DAVIS Live Feed")
-        print("4. Capture ZED Video")  # Moved this
+        print("4. Capture ZED Video")
         print("5. Display ZED Timestamp, FPS And Resolution")
-        print("6. Display ZED RGB Playback")  # Updated name
+        print("6. Display ZED RGB Playback")
         print("7. Display ZED Depth Video")
         print("8. Display ZED Confidence Map")
         print("9. Display ZED Body Tracking")
-        print("10. Display ZED All Features")  # Moved this
+        print("10. Display ZED All Features")
         print("0. Exit")
 
         try:
