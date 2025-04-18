@@ -9,46 +9,50 @@ from camera_feature import display_confidence_map
 from camera_feature import video_capture
 from camera_feature import align_video
 from camera_feature import display_all_features
+from camera_feature import display_davis_feed  # New import
 
 def main():
     while True:
         print("\nChoose a function to run:")
         print("1. Display Camera Calibration")
         print("2. Display Live Feed")
-        print("3. Display All Features")
-        print("4. Display ZED Timestamp")
-        print("5. Playback Video")
-        print("6. Display Body Tracking")
-        print("7. Display FPS")
-        print("8. Display Depth Video")
-        print("9. Display Confidence Map")
-        print("10. Capture Video")
-        print("11. Align Video")
+        print("3. Display Live Feed from DAVIS")  # New option
+        print("4. Display All Features")
+        print("5. Display ZED Timestamp")
+        print("6. Playback Video")
+        print("7. Display Body Tracking")
+        print("8. Display FPS")
+        print("9. Display Depth Video")
+        print("10. Display Confidence Map")
+        print("11. Capture Video")
+        print("12. Align Video")
         print("0. Exit")
 
-        choice = input("Enter the number (0-11): ")
+        choice = input("Enter the number (0-12): ")
 
         if choice == "1":
             camera_calibration.run()
         elif choice == "2":
             display_live_feed.run()
         elif choice == "3":
-            display_all_features.run()  # Updated function
+            display_davis_feed.run()  # New function
         elif choice == "4":
-            zed_timestamp.run()
+            display_all_features.run()
         elif choice == "5":
-            video_playback.run()
+            zed_timestamp.run()
         elif choice == "6":
-            display_body_tracking.run()
+            video_playback.run()
         elif choice == "7":
-            capture_fps.run()
+            display_body_tracking.run()
         elif choice == "8":
-            display_depth_video.run()
+            capture_fps.run()
         elif choice == "9":
-            display_confidence_map.run()
+            display_depth_video.run()
         elif choice == "10":
-            video_capture.run()
+            display_confidence_map.run()
         elif choice == "11":
+            video_capture.run()
+        elif choice == "12":
             align_video.run()
         elif choice == "0":
             print("Exiting...")
