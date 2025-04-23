@@ -10,6 +10,7 @@ from camera_feature import video_capture
 from camera_feature import display_all_features
 from camera_feature import display_davis_feed
 from camera_feature import display_davis_calibration
+from camera_feature import display_davis_playback  # Import DAVIS playback
 
 def run_both_davis_zed():
     process1 = multiprocessing.Process(target=display_davis_feed.run)
@@ -28,13 +29,14 @@ def main():
         "3": run_both_davis_zed, 
         "4": display_live_feed.run,
         "5": display_davis_feed.run,
-        "6": video_capture.run,
-        "7": zed_timestamp_fps_res.run,
-        "8": video_playback.run,  
-        "9": display_depth_video.run,
-        "10": display_confidence_map.run,
-        "11": display_body_tracking.run,
-        "12": display_all_features.run 
+        "6": display_davis_playback.run,  # Inserted DAVIS Playback here
+        "7": video_capture.run,
+        "8": zed_timestamp_fps_res.run,
+        "9": video_playback.run,  
+        "10": display_depth_video.run,
+        "11": display_confidence_map.run,
+        "12": display_body_tracking.run,
+        "13": display_all_features.run
     }
 
     while True:
@@ -44,17 +46,18 @@ def main():
         print("3. Display Both DAVIS and ZED Live Feed")
         print("4. Display ZED Live Feed")
         print("5. Display DAVIS Live Feed")
-        print("6. Capture ZED Video")
-        print("7. Display ZED Timestamp, FPS And Resolution")
-        print("8. Display ZED RGB Playback")
-        print("9. Display ZED Depth Video")
-        print("10. Display ZED Confidence Map")
-        print("11. Display ZED Body Tracking")
-        print("12. Display ZED All Features")
+        print("6. Display DAVIS Playback")   # Updated to show DAVIS Playback
+        print("7. Capture ZED Video")
+        print("8. Display ZED Timestamp, FPS And Resolution")
+        print("9. Display ZED RGB Playback")
+        print("10. Display ZED Depth Video")
+        print("11. Display ZED Confidence Map")
+        print("12. Display ZED Body Tracking")
+        print("13. Display ZED All Features")
         print("0. Exit")
 
         try:
-            choice = input("Enter the number (0-12): ").strip()
+            choice = input("Enter the number (0-13): ").strip()
         except (EOFError, KeyboardInterrupt):
             print("\nExiting...")
             break
