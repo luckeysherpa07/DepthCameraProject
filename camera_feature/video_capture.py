@@ -23,14 +23,14 @@ def select_resolution():
         "4": sl.RESOLUTION.VGA,
     }
 
-    return resolutions.get(choice, sl.RESOLUTION.HD720)  # Default to HD720 if invalid choice
+    return resolutions.get(choice, sl.RESOLUTION.HD720)
 
 def run(duration=5):
     # Create a ZED camera object
     zed = sl.Camera()
 
     # Define the base path and filename (one directory above the script)
-    directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "captured_videos")  # Updated path
+    directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "captured_videos")
     if not os.path.exists(directory):
         os.makedirs(directory)  # Create directory if it doesn't exist
     base_filename = "captured_video"
@@ -43,8 +43,8 @@ def run(duration=5):
 
     # Initialize the camera
     init_params = sl.InitParameters()
-    init_params.camera_resolution = resolution  # Set the chosen resolution
-    init_params.camera_fps = 30  # Set frames per second
+    init_params.camera_resolution = resolution
+    init_params.camera_fps = 30
 
     if zed.open(init_params) != sl.ERROR_CODE.SUCCESS:
         print("Failed to open camera")

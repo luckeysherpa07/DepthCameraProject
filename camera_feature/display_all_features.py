@@ -109,10 +109,10 @@ def run():
                             cv2.circle(image_with_keypoints, (int(kp[0]), int(kp[1])), 3, (0, 255, 0), -1)
 
             # Show the images
-            cv2.imshow("Image", image_ocv)  # clean RGB image
+            cv2.imshow("Image", image_ocv)
             cv2.imshow("Depth", depth_ocv)
             cv2.imshow("Confidence Map", colored_map)
-            cv2.imshow("Body Tracking", image_with_keypoints)  # with keypoints
+            cv2.imshow("Body Tracking", image_with_keypoints)
 
         elif zed.get_svo_position() == zed.get_svo_end_position():
             print("End of file reached. Looping back.")

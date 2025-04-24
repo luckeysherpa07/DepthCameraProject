@@ -11,8 +11,7 @@ from camera_feature import display_all_features
 from camera_feature import display_davis_feed
 from camera_feature import display_davis_calibration
 from camera_feature import display_davis_playback
-from camera_feature import davis_timestamp_fps_res  # Newly added
-
+from camera_feature import davis_timestamp_fps_res
 def run_both_davis_zed():
     process1 = multiprocessing.Process(target=display_davis_feed.run)
     process2 = multiprocessing.Process(target=display_live_feed.run) 

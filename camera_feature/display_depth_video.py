@@ -41,7 +41,7 @@ def run():
     input_type.set_from_svo_file(input_file)
 
     init = sl.InitParameters(input_t=input_type)
-    init.camera_resolution = sl.RESOLUTION.HD1080  # Set your preferred resolution
+    init.camera_resolution = sl.RESOLUTION.HD1080
     init.depth_mode = sl.DEPTH_MODE.PERFORMANCE
     init.coordinate_units = sl.UNIT.MILLIMETER
 

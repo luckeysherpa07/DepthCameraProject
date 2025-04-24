@@ -94,6 +94,6 @@ def run():
         if frame is not None:
             slicer.accept("frames", [frame])
 
-# To run the function
+
 if __name__ == "__main__":
     run()

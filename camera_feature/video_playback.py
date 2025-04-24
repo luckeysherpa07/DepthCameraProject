@@ -77,7 +77,7 @@ def run():
             cv2.imshow("Image", image_ocv)
         elif err == sl.ERROR_CODE.END_OF_SVOFILE_REACHED:
             print("End of file reached. Looping back.")
-            zed.set_svo_position(0)  # Reset to beginning instead of reopening
+            zed.set_svo_position(0)
             continue
 
         key = cv2.waitKey(frame_delay)

@@ -62,8 +62,8 @@ def run():
         if key == 27:  # ESC key to exit
             break
 
-    cap.release()  # Release the video capture object
-    cv.destroyAllWindows()  # Close the OpenCV window
+    cap.release()
+    cv.destroyAllWindows()  
 
 if __name__ == "__main__":
     run()
