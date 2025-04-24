@@ -44,13 +44,13 @@ def main():
     while True:
         print("\nChoose a function to run:")
         print("1. Display ZED Camera Calibration Info")
-        print("2. Display DAVIS Camera Calibration Info")
+        print("2. Display DAVIS Camera Info")
         print("3. Display Both DAVIS and ZED Live Feed")
         print("4. Display ZED Live Feed")
         print("5. Display DAVIS Live Feed")
         print("6. Display DAVIS Playback")
-        print("7. Display DAVIS Timestamp, FPS And Resolution")  # New
-        print("8. Capture ZED Video")                              # Moved
+        print("7. Display DAVIS Timestamp, FPS And Resolution")  
+        print("8. Capture ZED Video")                             
         print("9. Display ZED Timestamp, FPS And Resolution")
         print("10. Display ZED RGB Playback")
         print("11. Display ZED Depth Video")
@@ -69,6 +69,7 @@ def main():
             print("Exiting...")
             break
         elif choice in options:
+            print(f"\nRunning option {choice}...\n")
             options[choice]()
         else:
             print("Invalid choice!")
