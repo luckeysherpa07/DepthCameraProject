@@ -75,28 +75,40 @@ def run(recording_flag):
 
             img_np = image.get_data()
 
+            # Crop ZED image to match DAVIS aspect ratio (1.33)
+            target_aspect = 1.33
+            h, w, _ = img_np.shape
+            target_width = int(h * target_aspect)
+            start_x = (w - target_width) // 2
+            img_np = img_np[:, start_x:start_x + target_width]
+
+            # Process depth and confidence maps accordingly
             depth_map = cv2.normalize(depth.get_data(), None, 0, 255, cv2.NORM_MINMAX)
             depth_map = cv2.convertScaleAbs(depth_map)
+            depth_map = depth_map[:, start_x:start_x + target_width]
 
             conf_map = cv2.normalize(confidence.get_data(), None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
             conf_map = cv2.applyColorMap(conf_map, cv2.COLORMAP_JET)
+            conf_map = conf_map[:, start_x:start_x + target_width]
 
-            cv2.imshow("RGB View", img_np)
-            cv2.imshow("Depth Map", depth_map)
-            cv2.imshow("Confidence Map", conf_map)
-
+            # Draw body keypoints on cropped image
             for body in bodies.body_list:
                 if body.tracking_state == sl.OBJECT_TRACKING_STATE.OK:
                     for kp in body.keypoint_2d:
                         if not np.isnan(kp[0]) and not np.isnan(kp[1]):
-                            cv2.circle(img_np, (int(kp[0]), int(kp[1])), 3, (0, 255, 0), -1)
+                            if start_x <= kp[0] <= start_x + target_width:
+                                cropped_x = int(kp[0] - start_x)
+                                cropped_y = int(kp[1])
+                                cv2.circle(img_np, (cropped_x, cropped_y), 3, (0, 255, 0), -1)
 
             if recording:
                 cv2.putText(img_np, "REC", (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
+            cv2.imshow("RGB View", img_np)
+            cv2.imshow("Depth Map", depth_map)
+            cv2.imshow("Confidence Map", conf_map)
             cv2.imshow("Body Tracking", img_np)
 
-            # Check the recording_flag to start/stop recording
             if recording_flag.value and not recording:
                 recording = True
                 recording_params = sl.RecordingParameters(output_path, sl.SVO_COMPRESSION_MODE.H264)
