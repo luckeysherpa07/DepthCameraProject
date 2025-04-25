@@ -47,9 +47,11 @@ def run():
     fx = 300.0  # <-- Replace with real value from calibration
 
     fov = compute_fov(fx, width)
+    aspect_ratio = width / height
 
     print(f"FPS: {fps}")
     print(f"Resolution: {width}x{height}")
+    print(f"Aspect Ratio: {aspect_ratio:.2f}")
     print(f"Horizontal FoV (approx): {fov:.2f} degrees")
 
     cap.release()

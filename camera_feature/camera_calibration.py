@@ -8,6 +8,7 @@ def run():
     if zed.open(init_params) != sl.ERROR_CODE.SUCCESS:
         exit(1)
 
+    # Get camera information and calibration parameters
     calibration_params = zed.get_camera_information().camera_configuration.calibration_parameters
     focal_left_x = calibration_params.left_cam.fx
     focal_left_y = calibration_params.left_cam.fy
@@ -17,6 +18,15 @@ def run():
     tx = calibration_params.stereo_transform.get_translation().get()[0]
     h_fov = calibration_params.left_cam.h_fov
 
+    # Get camera resolution (width, height)
+    resolution = zed.get_camera_information().camera_configuration.resolution
+    width = resolution.width
+    height = resolution.height
+
+    # Calculate aspect ratio
+    aspect_ratio = width / height
+
+    # Print camera information
     print(f"Focal Length (Left X): {focal_left_x}")
     print(f"Focal Length (Left Y): {focal_left_y}")
     print(f"Focal Length (Right X): {focal_right_x}")
@@ -24,6 +34,7 @@ def run():
     print(f"Radial Distortion (k1): {k1}")
     print(f"Translation (tx): {tx}")
     print(f"Horizontal FoV: {h_fov}")
+    print(f"Aspect Ratio: {aspect_ratio}")
 
     zed.close()
 
