@@ -28,8 +28,8 @@ def main():
 
     options = {
         "1": camera_calibration.run,
-        "2": display_davis_calibration.run, 
-        "3": run_both_davis_zed, 
+        "2": display_davis_calibration.run,
+        "3": run_both_davis_zed,  # Only pass recording_flag here
         "4": display_live_feed.run,
         "5": display_davis_feed.run,
         "6": display_davis_playback.run,
@@ -70,9 +70,12 @@ def main():
         if choice == "0":
             print("Exiting...")
             break
-        elif choice in options:
+        elif choice == "3":  # Only pass recording_flag for this option
             print(f"\nRunning option {choice}...\n")
             options[choice](recording_flag)
+        elif choice in options:
+            print(f"\nRunning option {choice}...\n")
+            options[choice]()  # No recording_flag for other options
         else:
             print("Invalid choice!")
 
