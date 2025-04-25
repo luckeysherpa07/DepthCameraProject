@@ -12,9 +12,10 @@ from camera_feature import display_davis_feed
 from camera_feature import display_davis_calibration
 from camera_feature import display_davis_playback
 from camera_feature import davis_timestamp_fps_res
-def run_both_davis_zed():
-    process1 = multiprocessing.Process(target=display_davis_feed.run)
-    process2 = multiprocessing.Process(target=display_live_feed.run) 
+
+def run_both_davis_zed(recording_flag):
+    process1 = multiprocessing.Process(target=display_davis_feed.run, args=(recording_flag,))
+    process2 = multiprocessing.Process(target=display_live_feed.run, args=(recording_flag,)) 
 
     process1.start()
     process2.start()
@@ -23,6 +24,8 @@ def run_both_davis_zed():
     process2.join()
 
 def main():
+    recording_flag = multiprocessing.Value('b', False)  # Shared state for recording
+
     options = {
         "1": camera_calibration.run,
         "2": display_davis_calibration.run, 
@@ -69,7 +72,7 @@ def main():
             break
         elif choice in options:
             print(f"\nRunning option {choice}...\n")
-            options[choice]()
+            options[choice](recording_flag)
         else:
             print("Invalid choice!")
 

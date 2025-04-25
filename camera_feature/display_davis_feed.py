@@ -3,7 +3,7 @@ import cv2 as cv
 from datetime import timedelta
 import os
 
-def run():
+def run(recording_flag):
     # Open the camera, just use first detected DAVIS camera
     camera = dv.io.CameraCapture("", dv.io.CameraCapture.CameraType.DAVIS)
 
@@ -73,13 +73,12 @@ def run():
                 video_writer.release()  # Release the video writer if open
             exit(0)
         elif key == 32:  # Spacebar to start/stop recording
-            if recording:
-                print("Stopping recording.")
-                video_writer.release()  # Stop recording
-            else:
-                print("Starting recording.")
-                video_writer = None  # Reset writer to reinitialize it
             recording = not recording
+            recording_flag.value = recording  # Update the shared flag
+            if recording:
+                print("Starting recording.")
+            else:
+                print("Stopping recording.")
 
     # Register a job every 40ms
     slicer.doEveryTimeInterval(timedelta(milliseconds=40), display_preview)
@@ -96,4 +95,5 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    # Add recording_flag to track state across both processes
+    pass

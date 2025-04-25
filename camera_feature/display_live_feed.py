@@ -4,12 +4,13 @@ import pyzed.sl as sl
 import cv2
 import os
 import time
+import multiprocessing
 
 def get_next_filename(directory, base_filename):
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     return os.path.join(directory, f"{base_filename}_{timestamp}.svo")
 
-def run():
+def run(recording_flag):
     zed = sl.Camera()
 
     directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "captured_videos")
@@ -17,24 +18,7 @@ def run():
 
     output_path = get_next_filename(directory, "captured_video")
 
-    # Always use VGA resolution
     resolution = sl.RESOLUTION.VGA
-
-    # # === Previous resolution selection code ===
-    # resolutions = {
-    #     "1": sl.RESOLUTION.HD2K,
-    #     "2": sl.RESOLUTION.HD1080,
-    #     "3": sl.RESOLUTION.HD720,
-    #     "4": sl.RESOLUTION.VGA
-    # }
-    # print("Select ZED camera resolution:")
-    # print("1. HD2K (2208x1242)")
-    # print("2. HD1080 (1920x1080)")
-    # print("3. HD720 (1280x720)")
-    # print("4. VGA (672x376)")
-    # res_input = input("Enter option number (1-4): ")
-    # resolution = resolutions.get(res_input, sl.RESOLUTION.HD720)
-    # ==========================================
 
     init_params = sl.InitParameters()
     init_params.camera_resolution = resolution
@@ -112,20 +96,21 @@ def run():
 
             cv2.imshow("Body Tracking", img_np)
 
-            if key == 32:  # SPACE
-                if not recording:
-                    recording = True
-                    recording_params = sl.RecordingParameters(output_path, sl.SVO_COMPRESSION_MODE.H264)
-                    err = zed.enable_recording(recording_params)
-                    if err != sl.ERROR_CODE.SUCCESS:
-                        print(f"Failed to start recording: {err}")
-                        zed.close()
-                        return
-                    print("Recording started...")
-                else:
-                    zed.disable_recording()
-                    recording = False
-                    print("Recording stopped.")
+            # Check the recording_flag to start/stop recording
+            if recording_flag.value and not recording:
+                recording = True
+                recording_params = sl.RecordingParameters(output_path, sl.SVO_COMPRESSION_MODE.H264)
+                err = zed.enable_recording(recording_params)
+                if err != sl.ERROR_CODE.SUCCESS:
+                    print(f"Failed to start recording: {err}")
+                    zed.close()
+                    return
+                print("Recording started...")
+
+            if not recording_flag.value and recording:
+                zed.disable_recording()
+                recording = False
+                print("Recording stopped.")
 
         key = cv2.waitKey(10)
 
@@ -135,4 +120,14 @@ def run():
     print("\nFINISH")
 
 if __name__ == "__main__":
-    run()
+    recording_flag = multiprocessing.Value('b', False)  # 'b' stands for boolean
+    process2 = multiprocessing.Process(target=run, args=(recording_flag,))
+    process2.start()
+
+    # Simulate spacebar press to toggle recording on and off
+    while True:
+        time.sleep(5)  # Simulate some time delay
+        recording_flag.value = not recording_flag.value  # Toggle recording flag
+        print(f"Recording Flag: {recording_flag.value}")
+        if not process2.is_alive():
+            break
