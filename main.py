@@ -12,6 +12,7 @@ from camera_feature import display_davis_feed
 from camera_feature import display_davis_calibration
 from camera_feature import display_davis_playback
 from camera_feature import davis_timestamp_fps_res
+from camera_feature import stereo_calibrate_from_zed_to_davis  # Renamed import
 
 def run_both_davis_zed(recording_flag):
     process1 = multiprocessing.Process(target=display_davis_feed.run, args=(recording_flag,))
@@ -29,18 +30,19 @@ def main():
     options = {
         "1": camera_calibration.run,
         "2": display_davis_calibration.run,
-        "3": run_both_davis_zed,  # Only pass recording_flag here
+        "3": run_both_davis_zed,
         "4": display_live_feed.run,
         "5": display_davis_feed.run,
         "6": display_davis_playback.run,
-        "7": davis_timestamp_fps_res.run,            
+        "7": davis_timestamp_fps_res.run,
         "8": video_capture.run,
         "9": zed_timestamp_fps_res.run,
-        "10": video_playback.run,  
+        "10": video_playback.run,
         "11": display_depth_video.run,
         "12": display_confidence_map.run,
         "13": display_body_tracking.run,
-        "14": display_all_features.run
+        "14": display_all_features.run,
+        "15": stereo_calibrate_from_zed_to_davis.run  # Updated option
     }
 
     while True:
@@ -59,10 +61,11 @@ def main():
         print("12. Display ZED Confidence Map")
         print("13. Display ZED Body Tracking")
         print("14. Display ZED All Features")
+        print("15. StereoCalibrate ZED to DAVIS")
         print("0. Exit")
 
         try:
-            choice = input("Enter the number (0-14): ").strip()
+            choice = input("Enter the number (0-15): ").strip()
         except (EOFError, KeyboardInterrupt):
             print("\nExiting...")
             break
@@ -70,12 +73,12 @@ def main():
         if choice == "0":
             print("Exiting...")
             break
-        elif choice == "3":  # Only pass recording_flag for this option
+        elif choice == "3":
             print(f"\nRunning option {choice}...\n")
             options[choice](recording_flag)
         elif choice in options:
             print(f"\nRunning option {choice}...\n")
-            options[choice]()  # No recording_flag for other options
+            options[choice]()
         else:
             print("Invalid choice!")
 
