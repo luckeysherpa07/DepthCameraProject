@@ -25,7 +25,7 @@ def load_intrinsics():
     print("ZED Distortion Coefficients:\n", zed_dist_coeffs)
 
     # --- DAVIS Camera ---
-    relative_path = "./DAVIS_calibration_file/davis_intrinsics.xml"
+    relative_path = "./DAVIS_calibration_file/davis_intrinsics.xml"  
     file_path = os.path.abspath(relative_path)
     fs = cv2.FileStorage(file_path, cv2.FILE_STORAGE_READ)
     if not fs.isOpened():
@@ -53,8 +53,8 @@ def run():
     print("\nObject Points:\n", objp)
 
     # --- Load image pairs ---
-    zed_images = sorted(glob.glob("zed/*.png"))
-    davis_images = sorted(glob.glob("davis/*.png"))
+    zed_images = sorted(glob.glob("./ZED_calibration_images/*.png"))  
+    davis_images = sorted(glob.glob("./DAVIS_calibration_images/*.png"))
 
     objectPoints, imagePoints_zed, imagePoints_davis = [], [], []
 
