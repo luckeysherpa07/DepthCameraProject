@@ -1,0 +1,42 @@
+{
+    "0": {
+        "affine_rotation": null,
+        "affine_scale": null,
+        "affine_translation": null,
+        "camera_matrix": {
+            "cols": 3,
+            "data": [
+                1784.7383454355613,
+                0.0,
+                608.7144946971615,
+                0.0,
+                1774.1106356897196,
+                364.5184107845328,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "rows": 3,
+            "type": 6
+        },
+        "camera_serial": "",
+        "dist_coeffs": {
+            "cols": 5,
+            "data": [
+                -0.8475105331488656,
+                -7.40218741039262,
+                -0.03006319133844682,
+                0.002281150461121122,
+                144.3147482697936
+            ],
+            "rows": 1,
+            "type": 6
+        },
+        "frame_size": {
+            "cols": 1280,
+            "rows": 720
+        },
+        "rotation": null,
+        "translation": null
+    }
+}
