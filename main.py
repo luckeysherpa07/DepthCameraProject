@@ -16,6 +16,7 @@ from camera_feature import stereo_calibrate_from_zed_to_davis
 from camera_feature import stereo_calibrate_from_dvsense_to_davis  # ✅ New import
 from camera_feature import display_extrinsic_parameters
 from camera_feature import display_rectified_view
+from camera_feature import convert_svo_to_mp4  # New import for SVO to MP4 conversion
 
 def run_both_davis_zed(recording_flag):
     process1 = multiprocessing.Process(target=display_davis_feed.run, args=(recording_flag,))
@@ -51,7 +52,8 @@ def main():
         "14": display_all_features.run,
         "15": stereo_calibrate_from_zed_to_davis.run,
         "16": display_extrinsic_parameters.run,
-        "18": stereo_calibrate_from_dvsense_to_davis.run  
+        "18": stereo_calibrate_from_dvsense_to_davis.run,
+        "19": convert_svo_to_mp4.run,  # New option for SVO to MP4 conversion
     }
 
     while True:
@@ -73,11 +75,12 @@ def main():
         print("15. StereoCalibrate ZED to DAVIS")
         print("16. Display Extrinsic Parameter Info")
         print("17. Display Rectified View from ZED and DAVIS")
-        print("18. StereoCalibrate DVSense to DAVIS")  
+        print("18. StereoCalibrate DVSense to DAVIS")
+        print("19. Convert SVO to MP4")  # New option
         print("0.  Exit")
 
         try:
-            choice = input("Enter the number (0-18): ").strip()
+            choice = input("Enter the number (0-19): ").strip()
         except (EOFError, KeyboardInterrupt):
             print("\nExiting...")
             break
