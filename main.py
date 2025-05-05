@@ -1,6 +1,6 @@
 import multiprocessing
 from camera_feature import camera_calibration
-from camera_feature import display_live_feed 
+from camera_feature import display_live_feed
 from camera_feature import zed_timestamp_fps_res
 from camera_feature import video_playback
 from camera_feature import display_body_tracking
@@ -12,7 +12,8 @@ from camera_feature import display_davis_feed
 from camera_feature import display_davis_calibration
 from camera_feature import display_davis_playback
 from camera_feature import davis_timestamp_fps_res
-from camera_feature import stereo_calibrate_from_zed_to_davis  # Renamed import
+from camera_feature import stereo_calibrate_from_zed_to_davis
+from camera_feature import display_extrinsic_parameters  
 
 def run_both_davis_zed(recording_flag):
     process1 = multiprocessing.Process(target=display_davis_feed.run, args=(recording_flag,))
@@ -25,7 +26,7 @@ def run_both_davis_zed(recording_flag):
     process2.join()
 
 def main():
-    recording_flag = multiprocessing.Value('b', False)  # Shared state for recording
+    recording_flag = multiprocessing.Value('b', False)
 
     options = {
         "1": camera_calibration.run,
@@ -42,7 +43,8 @@ def main():
         "12": display_confidence_map.run,
         "13": display_body_tracking.run,
         "14": display_all_features.run,
-        "15": stereo_calibrate_from_zed_to_davis.run  # Updated option
+        "15": stereo_calibrate_from_zed_to_davis.run,  
+        "16": display_extrinsic_parameters.run 
     }
 
     while True:
@@ -62,10 +64,11 @@ def main():
         print("13. Display ZED Body Tracking")
         print("14. Display ZED All Features")
         print("15. StereoCalibrate ZED to DAVIS")
+        print("16. Display Extrinsic Parameter Info")
         print("0. Exit")
 
         try:
-            choice = input("Enter the number (0-15): ").strip()
+            choice = input("Enter the number (0-16): ").strip()
         except (EOFError, KeyboardInterrupt):
             print("\nExiting...")
             break
