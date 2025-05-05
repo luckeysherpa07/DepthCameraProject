@@ -13,12 +13,13 @@ from camera_feature import display_davis_calibration
 from camera_feature import display_davis_playback
 from camera_feature import davis_timestamp_fps_res
 from camera_feature import stereo_calibrate_from_zed_to_davis
+from camera_feature import stereo_calibrate_from_dvsense_to_davis  # ✅ New import
 from camera_feature import display_extrinsic_parameters
 from camera_feature import display_rectified_view
 
 def run_both_davis_zed(recording_flag):
     process1 = multiprocessing.Process(target=display_davis_feed.run, args=(recording_flag,))
-    process2 = multiprocessing.Process(target=display_live_feed.run, args=(recording_flag,)) 
+    process2 = multiprocessing.Process(target=display_live_feed.run, args=(recording_flag,))
     process1.start()
     process2.start()
     process1.join()
@@ -44,20 +45,21 @@ def main():
         "14": display_all_features.run,
         "15": stereo_calibrate_from_zed_to_davis.run,
         "16": display_extrinsic_parameters.run,
-        "17": display_rectified_view.run
+        "17": display_rectified_view.run,
+        "18": stereo_calibrate_from_dvsense_to_davis.run  
     }
 
     while True:
         print("\nChoose a function to run:")
-        print("1. Display ZED Camera Calibration Info")
-        print("2. Display DAVIS Camera Info")
-        print("3. Display Both DAVIS and ZED Live Feed")
-        print("4. Display ZED Live Feed")
-        print("5. Display DAVIS Live Feed")
-        print("6. Display DAVIS Playback")
-        print("7. Display DAVIS Timestamp, FPS And Resolution")  
-        print("8. Capture ZED Video")                             
-        print("9. Display ZED Timestamp, FPS And Resolution")
+        print("1.  Display ZED Camera Calibration Info")
+        print("2.  Display DAVIS Camera Info")
+        print("3.  Display Both DAVIS and ZED Live Feed")
+        print("4.  Display ZED Live Feed")
+        print("5.  Display DAVIS Live Feed")
+        print("6.  Display DAVIS Playback")
+        print("7.  Display DAVIS Timestamp, FPS And Resolution")
+        print("8.  Capture ZED Video")
+        print("9.  Display ZED Timestamp, FPS And Resolution")
         print("10. Display ZED RGB Playback")
         print("11. Display ZED Depth Video")
         print("12. Display ZED Confidence Map")
@@ -66,10 +68,11 @@ def main():
         print("15. StereoCalibrate ZED to DAVIS")
         print("16. Display Extrinsic Parameter Info")
         print("17. Display Rectified View from ZED and DAVIS")
-        print("0. Exit")
+        print("18. StereoCalibrate DVSense to DAVIS")  
+        print("0.  Exit")
 
         try:
-            choice = input("Enter the number (0-17): ").strip()
+            choice = input("Enter the number (0-18): ").strip()
         except (EOFError, KeyboardInterrupt):
             print("\nExiting...")
             break
