@@ -28,12 +28,18 @@ def run_both_davis_zed(recording_flag):
 def main():
     recording_flag = multiprocessing.Value('b', False)
 
+    # Functions that require the recording_flag argument
+    options_with_args = {
+        "3": run_both_davis_zed,  # This requires recording_flag
+        "4": display_live_feed.run,  # This requires recording_flag
+        "5": display_davis_feed.run,  # This requires recording_flag
+        "17": display_rectified_view.run,
+    }
+
+    # Functions that do not require arguments
     options = {
         "1": camera_calibration.run,
         "2": display_davis_calibration.run,
-        "3": run_both_davis_zed,
-        "4": display_live_feed.run,
-        "5": display_davis_feed.run,
         "6": display_davis_playback.run,
         "7": davis_timestamp_fps_res.run,
         "8": video_capture.run,
@@ -45,7 +51,6 @@ def main():
         "14": display_all_features.run,
         "15": stereo_calibrate_from_zed_to_davis.run,
         "16": display_extrinsic_parameters.run,
-        "17": display_rectified_view.run,
         "18": stereo_calibrate_from_dvsense_to_davis.run  
     }
 
@@ -80,12 +85,12 @@ def main():
         if choice == "0":
             print("Exiting...")
             break
-        elif choice == "3":
+        elif choice in options_with_args:
             print(f"\nRunning option {choice}...\n")
-            options[choice](recording_flag)
+            options_with_args[choice](recording_flag)  # Pass the recording_flag here
         elif choice in options:
             print(f"\nRunning option {choice}...\n")
-            options[choice]()
+            options[choice]()  # No arguments needed
         else:
             print("Invalid choice!")
 
