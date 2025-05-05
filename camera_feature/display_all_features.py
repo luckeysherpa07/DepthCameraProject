@@ -79,7 +79,8 @@ def run():
     print("Press 'q' to quit.")
     key = ' '
     while key != 113:  # ASCII for 'q'
-        if zed.grab(runtime_params) == sl.ERROR_CODE.SUCCESS:
+        err = zed.grab(runtime_params)
+        if err == sl.ERROR_CODE.SUCCESS:
             # Retrieve images and depth data
             zed.retrieve_image(image_zed, sl.VIEW.LEFT)
             zed.retrieve_image(depth_image, sl.VIEW.DEPTH)
@@ -114,11 +115,12 @@ def run():
             cv2.imshow("Confidence Map", colored_map)
             cv2.imshow("Body Tracking", image_with_keypoints)
 
-        elif zed.get_svo_position() == zed.get_svo_end_position():
+        elif err == sl.ERROR_CODE.END_OF_SVOFILE_REACHED:
             print("End of file reached. Looping back.")
             zed.set_svo_position(0)
+            continue
 
-        key = cv2.waitKey(10)
+        key = cv2.waitKey(10) & 0xFF
 
     # Cleanup
     cv2.destroyAllWindows()
