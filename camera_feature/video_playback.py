@@ -42,7 +42,7 @@ def run():
 
     init = sl.InitParameters(input_t=input_type)
     init.camera_resolution = sl.RESOLUTION.HD1080
-    init.depth_mode = sl.DEPTH_MODE.PERFORMANCE
+    init.depth_mode = sl.DEPTH_MODE.NEURAL
     init.coordinate_units = sl.UNIT.MILLIMETER
 
     # Open the ZED camera or load the SVO file
